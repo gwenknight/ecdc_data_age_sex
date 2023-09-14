@@ -1,0 +1,179 @@
+---
+title: "Appendix 3"
+author: "Naomi Waterlow, Gwen Knight"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Paper: Why demographic factors matter for antimicrobial resistance – quantification of the patterns and impact of variation in prevalence of resistance by age and gender 
+
+## Bacteria-antibiotic specific results
+
+This Appendix contains the model results for each bacteria-antibiotic combination. 
+
+
+```{r Acispp, amika_R, echo=FALSE, fig.cap = "*Acinetobacter*, Amikacin A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories.", fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_acispp_amika_R_combo.tiff") )
+
+```
+
+```{r Acispp, aminogl_R, echo=FALSE, fig.cap = "*Acinetobacter*, Aminoglycosides A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories.", fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_acispp_aminogl_R_combo.tiff") )
+
+```
+
+```{r Acispp, carbapen_R, echo=FALSE, fig.cap = "*Acinetobacter*, Carbapenems A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories.", fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_acispp_carbapen_R_combo.tiff") )
+
+```
+
+```{r Acispp, fq_pseudo_R, echo=FALSE, fig.cap = "*Acinetobacter*, Fluroquinolones A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories.", fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_acispp_fq_pseudo_R_combo.tiff") )
+
+```
+
+```{r encfae, genta_high, echo=FALSE, fig.cap = "*Enterococcus faecalis*, High-level aminoglycoside A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories." , fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_encfae_genta_high_combo.tiff") )
+
+```
+
+```{r encfae, vanco_R, echo=FALSE, fig.cap = "*Enterococcus faecalis*, Vancomycin. A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories." , fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_encfae_vanco_R_combo.tiff") )
+
+```
+
+```{r encfai, aminopen_R, echo=FALSE, fig.cap = "*Enterococcus faecium*, Aminopenicillins. A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories." , fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_encfai_aminopen_R_combo.tiff") )
+
+```
+
+```{r encfai, genta_high, echo=FALSE, fig.cap = "*Enterococcus faecium*, High-level aminoglycoside A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories." , fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_encfai_genta_high_combo.tiff") )
+
+```
+
+```{r esccol, amika_R, echo=FALSE, fig.cap = "*Escherichia coli*, Amikacin. A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories." , fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_esccol_amika_R_combo.tiff") )
+
+```
+
+```{r esccol, aminogl_R, echo=FALSE, fig.cap = "*Escherichia coli*,  Aminoglycosides. A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories." , fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_esccol_aminogl_R_combo.tiff") )
+
+```
+
+```{r esccol, aminopen_R, echo=FALSE, fig.cap = "*Escherichia coli*,  Aminopenicillins A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories." , fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_esccol_aminopen_R_combo.tiff") )
+
+```
+
+```{r esccol, carbapen_R, echo=FALSE, fig.cap = "*Escherichia coli*,  Carbapenems. A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories." , fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_esccol_carbapen_R_combo.tiff") )
+
+```
+
+```{r esccol, cefIII_entero_R, echo=FALSE, fig.cap = "*Escherichia coli*,  Third-generation cephalosporins. A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories." , fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_esccol_cefIII_entero_R_combo.tiff") )
+
+```
+
+```{r esccol, fq_ent_R, echo=FALSE, fig.cap = "*Escherichia coli*,  Fluoroquinolones. A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories." , fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_esccol_fq_ent_R_combo.tiff") )
+
+```
+
+```{r esccol, ureidopen_R, echo=FALSE, fig.cap = "*Escherichia coli*,  piperacillin-tazobactam A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories." , fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_esccol_ureidopen_R_combo.tiff") )
+
+```
+
+```{r klepne, amika_R, echo=FALSE, fig.cap = "*Klebsiella pneumoniae*,  Amikacin. A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories." , fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_klepne_amika_R_combo.tiff") )
+
+```
+
+```{r klepne, aminogl_R, echo=FALSE, fig.cap = "*Klebsiella pneumoniae*,  Aminoglycosides. A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories." , fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_klepne_aminogl_R_combo.tiff") )
+
+```
+
+```{r klepne, carbapen_R, echo=FALSE, fig.cap = "*Klebsiella pneumoniae*,  Carbapenems A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories." , fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_klepne_carbapen_R_combo.tiff") )
+
+```
+
+```{r klepne, cefIII_entero_R, echo=FALSE, fig.cap = "*Klebsiella pneumoniae*,  Third-generation cephalosporins. A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories." , fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_klepne_cefIII_entero_R_combo.tiff") )
+
+```
+
+```{r klepne, ert_R, echo=FALSE, fig.cap = "*Klebsiella pneumoniae*,  Ertapenem. A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories." , fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_klepne_ert_R_combo.tiff") )
+
+```
+
+```{r klepne, fq_ent_R, echo=FALSE, fig.cap = "*Klebsiella pneumoniae*,  Fluoroquinolones A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories." , fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_klepne_fq_ent_R_combo.tiff") )
+
+```
+
+```{r pseaer, amika_R, echo=FALSE, fig.cap = "*Pseudomonas aeruginosa*,  Amikacin. A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories." , fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_pseaer_amika_R_combo.tiff") )
+
+```
+
+```{r pseaer, aminogl_R, echo=FALSE, fig.cap = "*Pseudomonas aeruginosa*,  Aminoglycosides A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories." , fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_pseaer_aminogl_R_combo.tiff") )
+
+```
+
+```{r pseaer, carbapen_R, echo=FALSE, fig.cap = "*Pseudomonas aeruginosa*,  Carbapenems. A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories." , fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_pseaer_carbapen_R_combo.tiff") )
+
+```
+
+```{r pseaer, ceftaz_R, echo=FALSE, fig.cap = "*Pseudomonas aeruginosa*,  Ceftazidime. A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories." , fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_pseaer_ceftaz_R_combo.tiff") )
+
+```
+
+```{r pseaer, fq_pseudo_R, echo=FALSE, fig.cap = "*Pseudomonas aeruginosa*,  Fluoroquinolone. A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories." , fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_pseaer_fq_pseudo_R_combo.tiff") )
+
+```
+
+```{r pseaer, ureidopen_R, echo=FALSE, fig.cap = "*Pseudomonas aeruginosa*,  piperacillin-tazobactam. A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories." , fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_pseaer_ureidopen_R_combo.tiff") )
+
+```
+
+```{r staaur, rifamp_R, echo=FALSE, fig.cap = "*Staphylococcus aureus*,  Rifampicin. A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories." , fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_staaur_rifamp_R_combo.tiff") )
+
+```
+
+```{r staaur, mrsa_R, echo=FALSE, fig.cap = "*Staphylococcus aureus*,  MRSA (oxacillin or cefoxitin). A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories." , fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_staaur_mrsa_R_combo.tiff") )
+
+```
+
+```{r staaur, fq_staaur_R, echo=FALSE, fig.cap = "*Staphylococcus aureus*,  Fluoroquinolone. A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories." , fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_staaur_fq_staaur_R_combo.tiff") )
+
+```
+
+```{r strpne, macrol_R, echo=FALSE, fig.cap = "*Streptococcus pneumoniae*,  Macrolide. A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories." , fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_strpne_macrol_R_combo.tiff") )
+
+```
+
+```{r strpne, penic_RI, echo=FALSE, fig.cap = "*Streptococcus pneumoniae*,  Penicillins. A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories." , fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_strpne_penic_RI_combo.tiff") )
+
+```
+

@@ -1,0 +1,15 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.DS_Store
+data/
+plots/
+fits/
+plots/.DS_Store
+output/
+*.tiff
+*.rds
+*.RDataTmp
+Appendix_3.pdf
+Appendix_4.pdf
