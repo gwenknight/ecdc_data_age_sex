@@ -14,6 +14,22 @@ colours_to_use <- c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#A65
 ## Data
 data <- read_csv("data/data_cleaned.csv")
 
+######*********** Summary stats ******* #######
+# Number of susceptibility tests
+data %>% ungroup() %>% summarise(total = sus + res) %>% summarise(sum(total))
+
+# By drug / bug
+data %>% ungroup() %>% group_by(pathogen, name) %>% summarise(total = sus + res) %>%
+  group_by(pathogen, name) %>% summarise(totals = sum(total))
+
+# Demographics
+range(data$age)
+data %>% group_by(gender) %>% summarise(mean(age), range(age), median(age))
+
+d <- data %>% group_by(gender) %>% summarise(total = sus+res) %>% summarise(sum(total))
+d[1,2] / (d[1,2] + d[2,2])*100 # 47% are from females
+
+
 ########*********  Usual plots  ******* #######
 #(1) Resistance proportions over time across all of Europe 
 europe <- data %>% ungroup() %>% group_by(year, pathogen, name) %>% dplyr::summarise(totals = sum(sus), totalr = sum(res)) %>% 

@@ -226,11 +226,15 @@ data_long_final$comboyr <- paste0(data_long_final$pathogen, data_long_final$name
 
 colnames(data_long_final) <- c("year", "age","gender","pathogen", "name", "laboratorycode","country", "NA", "sus", "res", "proportion","combo","comboyr")
 # (d) multi resistances removed 
+bug_drug <- unique(data_long_final[,c("pathogen","name")])
+multi_rs <- c("esccol_multi_R","strpne_multi_R","klepne_multi_R","pseaer_multi_R","acispp_multi_R")
+bug_drug <- bug_drug %>% filter(!name %in% multi_rs) # remove multi resistance 
 # (e) just 2015-2019
-data_long_final1 <- data_long_final %>% filter(combo %in% bug_drug$combo, year > 2014, year < 2020)
+data_long_final1 <- data_long_final %>% filter(year > 2014, year < 2020) ## 9438351 => 4266489
+data_long_final2 <- data_long_final1 %>% filter(combo %in% bug_drug$combo) ## 4266489 => 3549529
 
 # (f) add in bug drug names 
-data_long_finalnames <- data_long_final1 %>% 
+data_long_finalnames <- data_long_final2 %>% 
   mutate(pathogen = recode(pathogen, "encfae" = "Enterococcus faecalis", "encfai" = "Enterococcus faecium", 
                            "esccol" = "Escherichia coli", "klepne" = "Klebsiella pneumoniae", 
                            "staaur" = "Staphylococcus aureus", "strpne" = "Streptococcus pneumoniae", 
@@ -275,15 +279,15 @@ if(sensitivity_0 == "ON"){
 
 
 #####********* Basic analysis of final data ******* #######
-length(unique(data_long_final1$country))
-length(unique(data_long_final1$pathogen))
-length(unique(data_long_final1$name))
-mean(data_long_final1$proportion)
-sd(data_long_final1$proportion)
-sum(data_long_final1$sus + data_long_final1$res)
+length(unique(data_long_final2$country))
+length(unique(data_long_final2$pathogen))
+length(unique(data_long_final2$name))
+mean(data_long_final2$proportion)
+sd(data_long_final2$proportion)
+sum(data_long_final2$sus + data_long_final1$res)
 n_results2
 
-f <- data_long_final1 %>% ungroup() %>% group_by(pathogen, name) %>% summarise(total = sus + res) %>%
+f <- data_long_final2 %>% ungroup() %>% group_by(pathogen, name) %>% summarise(total = sus + res) %>%
   group_by(pathogen, name) %>% summarise(totals = sum(total)) 
 write.csv(f, "data/summary_final_cleaned.csv")
 
