@@ -238,7 +238,7 @@ write.csv(data_infs_inflate, "data/data_infs_inflated.csv")
 
 ############ Combine - with just age and sex split and bacteria: MAIN ANALYSIS AND SPLIT at EUROPEAN LEVEL 
 # Colour palette for bacteria
-brewer_col = c("#d73027","#f46d43","#fdae61","#fee090","#e0f3f8","#abd9e9","#74add1","#4575b4")
+brewer_col = c("#d73027","#f46d43","#fdae61","darkgoldenrod","#74add1","#4575b4","purple","violet")
 
 data_popsize_eu <- data_popsize %>% group_by(year, sex, lowage, age_group) %>% summarise(total_inage_gdr = sum(n_inage_gdr)) # sum populations over country
 data_infs_inflate_eu <- data_infs_inflate %>% filter(age > 0) %>% group_by(year,sex,pathogen,age_group) %>% summarise(total_inf = sum(n_inflat))
@@ -263,13 +263,15 @@ g2mid<- ggplot(combine_eu %>% filter(lowage < 55, year == 2019),
                aes(x = lowage, y = incidence, group = sex,col = factor(sex), 
                    fill = factor(sex))) + 
   geom_point() + 
-  geom_smooth(aes(), alpha = 0.2) + 
+  geom_smooth(aes(linetype = sex), alpha = 0.2) + 
   facet_wrap(~pathogen, scales = "free", ncol = 2) + 
   scale_fill_manual("Sex", labels = c("Female","Male"), values  = c("#E41A1C", "#377EB8")) +  
   scale_color_manual("Sex", labels = c("Female","Male"), values = c("#E41A1C", "#377EB8")) +  
+  scale_linetype_manual("Sex", labels = c("Female","Male"), values = c(1,2), guide = guide_legend(override.aes = list(linewidth = 1))) +  
   theme(strip.text = element_text(angle = 0,face="italic"), legend.position = "bottom") + 
   scale_x_continuous("Age") + 
-  scale_y_continuous("Incidence (infections / 100,000 population per year)")
+  scale_y_continuous("Incidence (infections / 100,000 population per year)") + 
+  theme(strip.background = element_rect(fill= "white", size=1.5))
 ggsave("plots/incidence_sex_sep_combine_eu_mid_years.pdf")
 
 ## All incidence
@@ -281,7 +283,8 @@ g_group <- ggplot(combine_eu %>% filter(year == 2019), aes(x = lowage, y = incid
   scale_color_manual("Bacteria",values = brewer_col) + 
   theme(legend.text = element_text(angle = 0,face="italic"), legend.position = "bottom") + 
   scale_x_continuous("Age") + 
-  scale_y_continuous("Incidence (infections / 100,000 population per year)")
+  scale_y_continuous("Incidence (infections / 100,000 population per year)") + 
+  theme(strip.background = element_rect(fill= "white", size=1.5))
 ggsave("plots/incidence_sex_group_combine_eu_all.pdf")
 
 g2mid + g_group + plot_layout(widths=c(1,1.9)) + plot_annotation(tag_levels = "A")
