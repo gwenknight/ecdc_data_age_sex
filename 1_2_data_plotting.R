@@ -24,7 +24,7 @@ data %>% ungroup() %>% group_by(pathogen, name) %>% summarise(total = sus + res)
 
 # Demographics
 range(data$age)
-data %>% group_by(gender) %>% summarise(mean(age), range(age), median(age))
+data %>% group_by(gender) %>% summarise(mean(age), range(age), median(age), sd(age))
 
 d <- data %>% group_by(gender) %>% summarise(total = sus+res) %>% summarise(sum(total))
 d[1,2] / (d[1,2] + d[2,2])*100 # 47% are from females
@@ -623,9 +623,9 @@ ggsave("plots/European_level_byage_bug_drug_1yr_drugfamily_withoutUKITFRDE.png")
 data_long %>% filter(family == "beta-lactam") %>% summarise(unique(aware))
 data_long <- data_long %>% 
   mutate(family_aware = ifelse(family == "beta-lactam", paste0(paste(family, aware,sep="\n("),")"), family))
-familydrugawarepal <- c('#c51b7d','#e6f598',
-                        '#FF0000','#fc8d59',"#FFCC00",'#FFF000',
-                        '#000CCC','#99d594','#3288bd',"#654CFF")
+# familydrugawarepal <- c('#c51b7d','#e6f598',
+#                         '#FF0000','#fc8d59',"#FFCC00",'#FFF000',
+#                         '#000CCC','#99d594','#3288bd',"#654CFF")
 familydrugawarepal <- c('#4575b4','#ffffbf','#d73027','#f46d43','#fdae61','#fee090','#74add1','#000CCC',"#654CFF")
 
 ### colour by aware within beta-lactam
@@ -711,7 +711,7 @@ g4a <- ggplot(data_bybugdrug %>% filter(pathogen %in% c("Staphylococcus aureus",
 # 
 # ((p1a) / (p2a)) + plot_layout(guides = "collect")
 
-ggsave("plots/European_level_byage_bug_drug_1yr_drugfamily_aware_FIGURE.png", width = 22, height = 10)
+ggsave("plots/Fig1.tiff",dpi = 300, width = 22, height = 10)
 
 
 

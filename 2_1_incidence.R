@@ -259,6 +259,7 @@ combine_eu$pathogen <- factor(combine_eu$pathogen, levels = c("Escherichia coli"
                                                               "Streptococcus pneumoniae","Acinetobacter spp"))
 
 ## Interesting younger age patterns 
+## Interesting younger age patterns 
 g2mid<- ggplot(combine_eu %>% filter(lowage < 55, year == 2019), 
                aes(x = lowage, y = incidence, group = sex,col = factor(sex), 
                    fill = factor(sex))) + 
@@ -270,7 +271,7 @@ g2mid<- ggplot(combine_eu %>% filter(lowage < 55, year == 2019),
   scale_linetype_manual("Sex", labels = c("Female","Male"), values = c(1,2), guide = guide_legend(override.aes = list(linewidth = 1))) +  
   theme(strip.text = element_text(angle = 0,face="italic"), legend.position = "bottom") + 
   scale_x_continuous("Age") + 
-  scale_y_continuous("Incidence (infections / 100,000 population per year)") + 
+  scale_y_log10("Incidence (infections / 100,000 population per year)") + 
   theme(strip.background = element_rect(fill= "white", size=1.5))
 ggsave("plots/incidence_sex_sep_combine_eu_mid_years.pdf")
 
@@ -283,12 +284,12 @@ g_group <- ggplot(combine_eu %>% filter(year == 2019), aes(x = lowage, y = incid
   scale_color_manual("Bacteria",values = brewer_col) + 
   theme(legend.text = element_text(angle = 0,face="italic"), legend.position = "bottom") + 
   scale_x_continuous("Age") + 
-  scale_y_continuous("Incidence (infections / 100,000 population per year)") + 
+  scale_y_log10("Incidence (infections / 100,000 population per year)") + 
   theme(strip.background = element_rect(fill= "white", size=1.5))
 ggsave("plots/incidence_sex_group_combine_eu_all.pdf")
 
 g2mid + g_group + plot_layout(widths=c(1,1.9)) + plot_annotation(tag_levels = "A")
-ggsave("plots/incidence_FIGURE.pdf", width = 19, height = 11)
+ggsave("plots/Fig2.tiff", dpi = 300, width = 19, height = 11)
 
 
 ########################################################***** SENSITIVITY *********#################################################################################

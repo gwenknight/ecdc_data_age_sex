@@ -2,12 +2,14 @@
 library(data.table)
 library(ggplot2)
 library(readr)
+library(gridExtra)
 
 colours_to_use <- c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#A65628")
 familydrugpal <- c('#c51b7d','#fc8d59','#fee08b','#e6f598','#99d594','#3288bd')
-familydrugawarepal <- c('#c51b7d','#e6f598',
-                        '#FF0000','#fc8d59',"#FFCC00",'#FFF000',
-                        '#000CCC','#99d594','#3288bd',"#654CFF")
+# familydrugawarepal <- c('#c51b7d','#e6f598',
+#                         '#FF0000','#fc8d59',"#FFCC00",'#FFF000',
+#                         '#000CCC','#99d594','#3288bd',"#654CFF")
+familydrugawarepal <- c('#4575b4','#ffffbf','#d73027','#f46d43','#fdae61','#fee090','#74add1','#000CCC',"#654CFF")
 
 translate_bug_drugs <-as.data.table(read.csv("data/translate_drug_bugs.csv", header = F))
 translate_bugs <- unique(translate_bug_drugs[,c("V2", "V1")])
@@ -27,17 +29,17 @@ translate_bugs[bug_long == "Acinetobacter species", Gram := "Negative"]
 
 
 
-translate_drugs[resistance %in% c("amika_R", "aminogl_R","aminopen_R", "genta_high"), drug_family := "aminoglycoside"]
+translate_drugs[resistance %in% c("amika_R", "aminogl_R","genta_high"), drug_family := "aminoglycoside"]
 translate_drugs[resistance %in% c("carbapen_R", "cefIII_entero_R", "ert_R", "ureidopen_R", "ceftaz_R", 
-                                  "mrsa_R", "penic_RI"), drug_family := "beta-lactam"]
+                                  "mrsa_R", "penic_RI", "aminopen_R"), drug_family := "beta-lactam"]
 translate_drugs[resistance %in% c("fq_pseudo_R", "fq_ent_R", "fq_staaur_R"), drug_family :="fluoroquinolone"]
 translate_drugs[resistance %in% c("vanco_R"), drug_family :="glycopeptide"]
 translate_drugs[resistance %in% c("macrol_R"), drug_family :="macrolides"]
-translate_drugs[resistance %in% c("rifamp_R"), drug_family :="ansamycin"]
+translate_drugs[resistance %in% c("rifamp_R"), drug_family :="rifamycin"]
 
 translate_drugs[drug  %in% c("Penicillins", "Aminoglycosides"), aware := "Access + Watch"]
 translate_drugs[drug  %in% c("Third-generation cephalosporins"), aware := "Watch + Reserve"]
-translate_drugs[drug  %in% c("Amikacin","Aminopenicillins","High-level aminoglycoside", "MRSA (oxacillin or cefoxitin)"), aware := "Access"]
+translate_drugs[drug  %in% c("Amikacin","Aminopenicillins","High-level aminoglycoside", "Oxacillin or cefoxitin"), aware := "Access"]
 translate_drugs[is.na(aware), aware := "Watch"]
 
 translate_drugs[drug_family == "beta-lactam", final_grouping := paste0(paste(drug_family, aware,sep="\n("),")")]
@@ -67,7 +69,7 @@ comparisons_1_100[, bug_drug := paste0(bug, "_", resistance)]
 calculate_comparisons <- function(data_in, summary_level){
   
   f <- paste0(summary_level, " ~ type")
-
+  
   summary_calculations <- data_in[, quantile(female_difference, probs = c(0.025, 0.5, 0.975)), by = c(summary_level)]
   colnames(summary_calculations)[2] <- "female_difference"
   summary_calculations$male_difference <- data_in[, quantile(male_difference, probs = c(0.025, 0.5, 0.975)), by = c(summary_level)]$V1
@@ -89,7 +91,7 @@ calculate_comparisons <- function(data_in, summary_level){
 combo_bug <- calculate_comparisons(comparisons_1_100, "bug")
 
 BUG_COMPARE <- ggplot(combo_bug,
-       aes(x = bug, y = median, colour = gender)) + 
+                      aes(x = bug, y = median, colour = gender)) + 
   geom_pointrange(aes(ymin= lower, ymax = upper),
                   position = position_dodge(width = 0.3)) + 
   labs(y = "Change in proportion between age 1 and 100",
@@ -133,7 +135,7 @@ combo2[translate_bugs, on =c("bug"), Gram_stain := i.Gram]
 #                                                             "macrolides"))
 
 BUG_COMPARE_DRUG <- ggplot(combo2,
-                      aes(x = bug_long, y = median, colour = Gram_stain, group = drug_long)) + 
+                           aes(x = bug_long, y = median, colour = Gram_stain, group = drug_long)) + 
   geom_pointrange(aes(ymin= lower, ymax = upper),
                   position = position_dodge(width = 0.6)) + 
   labs(y = "Change in proportion between age 1 and 100",
@@ -144,7 +146,7 @@ BUG_COMPARE_DRUG <- ggplot(combo2,
   facet_grid(.~gender)+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+ 
   theme(axis.text.y=element_text(face="italic"))+
- # scale_colour_manual(values = familydrugpal) + 
+  # scale_colour_manual(values = familydrugpal) + 
   coord_flip()
 
 DRUG_COMPARE_BUG <- ggplot(combo2,
@@ -159,29 +161,31 @@ DRUG_COMPARE_BUG <- ggplot(combo2,
   theme_linedraw() + 
   facet_grid(.~gender)+
   scale_colour_manual(values = familydrugawarepal) + 
-  coord_flip()
+  coord_flip() + 
+  theme(legend.spacing.y = unit(0.2, 'cm')) +
+  guides(colour = guide_legend(byrow = TRUE))
 
 #legend = gtable_filter(ggplot_gtable(ggplot_build(DRUG_COMPARE_BUG)), "guide-box")
 
 
-tiff(paste0("output_figures/summaries_combined/bug_drug_combo.tiff"), 
+tiff(paste0("output_figures/summaries_combined/Fig5.tiff"), 
      width = 3250, height = 3000, res = 300)
 print( grid.arrange(
   BUG_COMPARE_DRUG, # + theme(legend.position = "none"),
   DRUG_COMPARE_BUG, #+ theme(legend.position = "none") ,
   layout_matrix = rbind(c(1,1,1,1,1), 
                         c(2,2,2,2,2))
-
+  
 ) )
 
 dev.off()
 
-    ###### BY DRUG #####
+###### BY DRUG #####
 
 combo_drug <- calculate_comparisons(comparisons_1_100, "resistance")
 
 DRUG_COMPARE <- ggplot(combo_drug,
-       aes(x = resistance, y = median, colour = gender)) + 
+                       aes(x = resistance, y = median, colour = gender)) + 
   geom_pointrange(aes(ymin= lower, ymax = upper),
                   position = position_dodge(width = 0.3)) + 
   labs(y = "Change in proportion between age 1 and 100",
