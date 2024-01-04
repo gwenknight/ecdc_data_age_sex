@@ -27,7 +27,7 @@ fixed_effs_storage <- list()
 # Read in the required data. 
 data<- as.data.table(read_csv("data/data_cleaned.csv")[,-1])
 country_reference <- as.data.table(read.csv("countries_reference.csv"))
-colnames(country_reference) <- c("country", "country_long")
+colnames(country_reference) <- c("country", "country_long","anon_country")
 data[country_reference, on = c("country"), country_long := i.country_long]
 translate_bug_drugs <-as.data.table(read.csv("data/translate_drug_bugs.csv", header = F))
 
@@ -113,10 +113,10 @@ for(i in 1:nrow(path_drug_combos)){
   
   if(only_model_D == T){
     
-    models_overview <- data.frame(matrix(NA, ncol = 4, nrow = 6))
+    models_overview <- data.frame(matrix(NA, ncol = 5, nrow = 6))
     rownames(models_overview) <- c("intercept", "year", "age", "age^2", "gender(m)", 
                                    "Age:gender(m)")
-    colnames(models_overview) <- c("Estimate", "Error", "Lower 95%", "Upper 95%")
+    colnames(models_overview) <- c("Estimate", "Error", "Lower 95%", "Upper 95%", "95% Credibility Interval")
     
     models_overview[,"Estimate"] <- c(fixef(Model_D)[c("Intercept", "year_s", 
                                                        "age_s", "age_squared_s", 
@@ -135,9 +135,13 @@ for(i in 1:nrow(path_drug_combos)){
     models_overview[,2] <- format(round(models_overview[,2],2), nsmall =2)
     models_overview[,3] <- format(round(models_overview[,3],2), nsmall =2)
     models_overview[,4] <- format(round(models_overview[,4],2), nsmall =2)
-    models_overview <- as.matrix(models_overview)
-    models_table <-tableGrob(models_overview)
-    title <- textGrob("A",gp=gpar(fontsize=15))
+    
+    models_overview[,5] <- paste0("(",models_overview[,3],", ",models_overview[,4],")")
+    
+    models_table <- as.matrix(models_overview[,c(1,2,5)])
+    colnames(models_table) <- c("Estimate","Standard Error","95% Credibility Interval")
+    models_table <-tableGrob(models_table)
+    title <- textGrob("A",gp=gpar(fontsize=12))
     padding <- unit(8,"mm")
     
     models_table_all <- gtable_add_rows(
@@ -289,8 +293,11 @@ for(i in 1:nrow(path_drug_combos)){
   combo$country <- factor(combo$country, levels = c(combo$country)[1:length(unique(combo$country))])
   combo[country_reference, on = c("country"), country_long := i.country_long]
   combo$country_long <- factor(combo$country_long, levels = c(combo$country_long)[1:length(unique(combo$country_long))])
+  combo <- left_join(combo, country_reference)
+  combo <- combo[order(gender, median)]
+  combo$anon_country <- factor(combo$anon_country, levels = c(combo$anon_country)[1:length(unique(combo$anon_country))])
   
-  ACROSS_COUNTRY <- ggplot(combo, aes(x = country_long, y = median, colour = gender )) +
+  ACROSS_COUNTRY <- ggplot(combo, aes(x = anon_country, y = median, colour = gender )) +
     # geom_point() +
     geom_hline( yintercept= 0) +
     geom_pointrange(aes(ymin=lower, ymax = upper), position = position_dodge(width = 0.4)) +
@@ -508,6 +515,7 @@ for(i in 1:nrow(path_drug_combos)){
   colnames(plotters_combo_sus)[4] <- "sus"
   plotters_combo[plotters_combo_sus, on =c("age", "gender", "country"), sus := i.sus]
   plotters_combo[, prop := res/(res+sus)]
+  plotters_combo <- left_join(plotters_combo, country_reference)
   
   age_s_total = length(seq(min_age/100, max_age/100, by = 0.01))
   
@@ -532,6 +540,9 @@ for(i in 1:nrow(path_drug_combos)){
   
   
   data_test[,age_squared_s := age_s*age_s]
+  
+  # Anonymised countries
+  data_test <- left_join(data_test, country_reference)
   
   model_to_predict <- Model_D
   
@@ -570,7 +581,7 @@ for(i in 1:nrow(path_drug_combos)){
   
   ############################################## Plot extreme countries 
   RIBBONS_FITTED2 <- ggplot(data_with_pred , aes(x = age, y = Estimate,
-                                                 group= interaction(country_long, gender, laboratorycode),
+                                                 group= interaction(anon_country, gender, laboratorycode),
                                                  colour = gender)) +
     geom_point(data = plotters_combo, aes ( x = age, y = prop,
                                             colour = gender, group = NULL, linetype = NULL,
@@ -579,11 +590,12 @@ for(i in 1:nrow(path_drug_combos)){
                     group = interaction(country_long, gender, laboratorycode)),
                 alpha = 0.5, colour = NA) +
     scale_colour_manual(values = colours_to_use[1:2]) +
-    facet_grid(gender~country_long) +
+    facet_grid(gender~anon_country) + 
+    guides(colour = "none", fill = "none") +
     geom_line(linewidth=1) +
     labs(y= "Fitted  proportion", x = "age", shape = "country", title = paste0("Bacteria: ", pathogen_to_run, ", antibiotic: ", resistance_to_run),
-         size = "sample size", colour = "sex", fill = "sex") +
-    lims(y = c(0,1))
+         size = "Sample size", colour = "sex", fill = "sex") +
+    lims(y = c(0,1)) 
   
   tiff(paste0("output_figures/by_bug_drug/", pathogen_to_run, "_", resistance_to_run, "_examples.tiff"),
        width = 3250, height = 2000, res = 300)
@@ -614,7 +626,7 @@ for(i in 1:nrow(path_drug_combos)){
   
   ############################################## Plot all results combined: figure for paper 
   tiff(paste0("output_figures/by_bug_drug/combined_", pathogen_to_run, "_", resistance_to_run, "_combo.tiff"),
-       width = 3250, height = 2250, res = 300)
+       width = 3850, height = 2250, res = 300)
   print( grid.arrange(
     models_table_all,
     ACROSS_COUNTRY + theme(legend.position="none")+ labs(title="B"),
@@ -639,7 +651,7 @@ for(i in 1:nrow(path_drug_combos)){
     layout_matrix = rbind(c(1,1,1,1,3,3,3,3,4),
                           c(2,2,2,2,3,3,3,3,4),
                           c(2,2,2,2,3,3,3,3,4)),
-    top = textGrob(paste0("Bacteria: ", bug_drug[,1],", Antibiotic: ", bug_drug[,2]) ,gp=gpar(fontsize=20,font=3))
+    top = textGrob(paste0("Bacteria: ", bug_drug[,1],", Antibiotic: ", bug_drug[,2]) ,gp=gpar(fontsize=18,font=3))
     
   ) )
   
@@ -660,7 +672,7 @@ stop()
 all_params_out[,Error := NULL]
 all_params_out <- all_params_out[, c("bug", "drug", "parameter", "Estimate", "Lower 95%", "Upper 95%")]
 all_params_out[, text_out := paste0(
- Estimate,
+  Estimate,
   " (",
   `Lower 95%`,
   " - ",

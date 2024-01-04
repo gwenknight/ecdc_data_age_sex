@@ -14,6 +14,22 @@ colours_to_use <- c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#A65
 ## Data
 data <- read_csv("data/data_cleaned.csv")
 
+######*********** Summary stats ******* #######
+# Number of susceptibility tests
+data %>% ungroup() %>% summarise(total = sus + res) %>% summarise(sum(total))
+
+# By drug / bug
+data %>% ungroup() %>% group_by(pathogen, name) %>% summarise(total = sus + res) %>%
+  group_by(pathogen, name) %>% summarise(totals = sum(total))
+
+# Demographics
+range(data$age)
+data %>% group_by(gender) %>% summarise(mean(age), range(age), median(age), sd(age))
+
+d <- data %>% group_by(gender) %>% summarise(total = sus+res) %>% summarise(sum(total))
+d[1,2] / (d[1,2] + d[2,2])*100 # 47% are from females
+
+
 ########*********  Usual plots  ******* #######
 #(1) Resistance proportions over time across all of Europe 
 europe <- data %>% ungroup() %>% group_by(year, pathogen, name) %>% dplyr::summarise(totals = sum(sus), totalr = sum(res)) %>% 
@@ -134,7 +150,7 @@ data_long <- data %>% filter(age > 0) %>%
                          ifelse(drug %in% c("aminoglycoside","amikacin","gentamicin"),"aminoglycoside",
                                 ifelse(drug == "fluoroquinolone","fluoroquinolone",
                                        ifelse(drug == "vancomycin","glycopeptide",
-                                              ifelse(drug == "macrolides","macrolides","ansamycin"))))),
+                                              ifelse(drug == "macrolides","macrolides","rifamycin"))))),
          aware = ifelse(drug %in% c("penicillins", "aminoglycoside"), "Access + Watch",
                         ifelse(drug %in% c("3G cephalosporins"), "Watch + Reserve",
                                ifelse(drug %in% c("amikacin","aminopenicillins","gentamicin", "methicillin"), "Access","Watch")))) # check out table S3 in appendix
@@ -251,8 +267,8 @@ g1a <- ggplot(data_bybugdrug %>% filter(pathogen %in% c("Pseudomonas aeruginosa"
   scale_x_continuous("Age") + 
   scale_y_continuous("Proportion of isolates tested\n that are resistant", lim = c(0,1)) + 
   scale_color_manual("Drug family", breaks = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", 
-                                               "ansamycin", "macrolides"), labels = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", 
-                                                                                      "ansamycin", "macrolides"),
+                                               "rifamycin", "macrolides"), labels = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", 
+                                                                                      "rifamycin", "macrolides"),
                      values = familydrugpal, drop = FALSE) + 
   scale_fill_discrete("Sex", breaks = c("f","m"), labels = c("female","male"), type = c("#E41A1C", "#377EB8")) + 
   scale_size("# samples", breaks = seq(2500,20000,2500)) + 
@@ -265,8 +281,8 @@ g2a <- ggplot(data_bybugdrug %>% filter(pathogen %in% c("Klebsiella pneumoniae",
   scale_x_continuous("Age") + 
   scale_y_continuous("Proportion of isolates tested\n that are resistant", lim = c(0,1)) + 
   scale_color_manual("Drug family", breaks = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", 
-                                               "ansamycin", "macrolides"), labels = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", 
-                                                                                      "ansamycin", "macrolides"),
+                                               "rifamycin", "macrolides"), labels = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", 
+                                                                                      "rifamycin", "macrolides"),
                      values = familydrugpal, drop = FALSE) + 
   scale_fill_discrete("Sex", breaks = c("f","m"), labels = c("female","male"), type = c("#E41A1C", "#377EB8")) + 
   scale_size("# samples", breaks = seq(2500,20000,2500)) + 
@@ -279,8 +295,8 @@ g3a <- ggplot(data_bybugdrug %>% filter(pathogen %in% c("Enterococcus faecalis",
   scale_x_continuous("Age") + 
   scale_y_continuous("Proportion of isolates tested\n that are resistant", lim = c(0,1)) + 
   scale_color_manual("Drug family", breaks = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", 
-                                               "ansamycin", "macrolides"), labels = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", 
-                                                                                      "ansamycin", "macrolides"),
+                                               "rifamycin", "macrolides"), labels = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", 
+                                                                                      "rifamycin", "macrolides"),
                      values = familydrugpal, drop = FALSE) + 
   scale_fill_discrete("Sex", breaks = c("f","m"), labels = c("female","male"), type = c("#E41A1C", "#377EB8")) +  
   scale_size("# samples", breaks = seq(2500,20000,2500)) + 
@@ -292,8 +308,8 @@ g4a <- ggplot(data_bybugdrug %>% filter(pathogen %in% c("Staphylococcus aureus",
   geom_smooth(aes(fill = sex), col = "black") + 
   scale_x_continuous("Age") + 
   scale_y_continuous("Proportion of isolates tested\n that are resistant", lim = c(0,1)) + 
-  scale_color_manual("Drug family", breaks = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", "ansamycin", "macrolides"), 
-                     labels = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", "ansamycin", "macrolides"),
+  scale_color_manual("Drug family", breaks = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", "rifamycin", "macrolides"), 
+                     labels = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", "rifamycin", "macrolides"),
                      values = familydrugpal, drop = FALSE) + 
   scale_fill_discrete("Sex", breaks = c("f","m"), labels = c("female","male"), type = c("#E41A1C", "#377EB8")) + 
   scale_size("# samples", breaks = seq(2500,20000,2500)) + 
@@ -484,8 +500,8 @@ g1a <- ggplot(data_bybugdrug %>% filter(pathogen %in% c("Pseudomonas aeruginosa"
   scale_x_continuous("Age") + 
   scale_y_continuous("Proportion of isolates tested\n that are resistant") + 
   scale_color_manual("Drug family", breaks = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", 
-                                               "ansamycin", "macrolides"), labels = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", 
-                                                                                      "ansamycin", "macrolides"),
+                                               "rifamycin", "macrolides"), labels = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", 
+                                                                                      "rifamycin", "macrolides"),
                      values = familydrugpal, drop = FALSE) + 
   scale_fill_discrete("Sex", breaks = c("f","m"), labels = c("female","male"),type = c("#E41A1C", "#377EB8")) + 
   
@@ -495,8 +511,8 @@ g1a <- ggplot(data_bybugdrug %>% filter(pathogen %in% c("Pseudomonas aeruginosa"
   scale_x_continuous("Age") + 
   scale_y_continuous("Proportion of isolates tested\n that are resistant") + 
   scale_color_manual("Drug family", breaks = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", 
-                                               "ansamycin", "macrolides"), labels = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", 
-                                                                                      "ansamycin", "macrolides"),
+                                               "rifamycin", "macrolides"), labels = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", 
+                                                                                      "rifamycin", "macrolides"),
                      values = familydrugpal, drop = FALSE) + 
   scale_fill_discrete("Sex", breaks = c("f","m"), labels = c("female","male"), type = c("#E41A1C", "#377EB8")) +  
   scale_size("# samples", breaks = seq(2500,20000,2500)) + 
@@ -509,8 +525,8 @@ g3a <- ggplot(data_bybugdrug %>% filter(pathogen %in% c("Enterococcus faecalis",
   scale_x_continuous("Age") + 
   scale_y_continuous("Proportion of isolates tested\n that are resistant") + 
   scale_color_manual("Drug family", breaks = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", 
-                                               "ansamycin", "macrolides"), labels = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", 
-                                                                                      "ansamycin", "macrolides"),
+                                               "rifamycin", "macrolides"), labels = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", 
+                                                                                      "rifamycin", "macrolides"),
                      values = familydrugpal, drop = FALSE) + 
   scale_fill_discrete("Sex", breaks = c("f","m"), labels = c("female","male"), type = c("#E41A1C", "#377EB8")) + 
   scale_size("# samples", breaks = seq(2500,20000,2500)) + 
@@ -522,8 +538,8 @@ g4a <- ggplot(data_bybugdrug %>% filter(pathogen %in% c("Staphylococcus aureus",
   geom_smooth(aes(fill = sex), col = "black") + 
   scale_x_continuous("Age") + 
   scale_y_continuous("Proportion of isolates tested\n that are resistant") + 
-  scale_color_manual("Drug family", breaks = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", "ansamycin", "macrolides"), 
-                     labels = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", "ansamycin", "macrolides"),
+  scale_color_manual("Drug family", breaks = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", "rifamycin", "macrolides"), 
+                     labels = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", "rifamycin", "macrolides"),
                      values = familydrugpal, drop = FALSE) + 
   scale_fill_discrete("Sex", breaks = c("f","m"), labels = c("female","male"), type = c("#E41A1C", "#377EB8")) + 
   scale_size("# samples", breaks = seq(2500,20000,2500)) + 
@@ -548,8 +564,8 @@ g1a <- ggplot(data_bybugdrug %>% filter(pathogen %in% c("Pseudomonas aeruginosa"
   scale_x_continuous("Age") + 
   scale_y_continuous("Proportion of isolates tested\n that are resistant") + 
   scale_color_manual("Drug family", breaks = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", 
-                                               "ansamycin", "macrolides"), labels = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", 
-                                                                                      "ansamycin", "macrolides"),
+                                               "rifamycin", "macrolides"), labels = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", 
+                                                                                      "rifamycin", "macrolides"),
                      values = familydrugpal, drop = FALSE) + 
   scale_fill_discrete("Sex", breaks = c("f","m"), labels = c("female","male"), type = c("#E41A1C", "#377EB8")) + 
   scale_size("# samples", breaks = seq(2500,20000,2500)) + 
@@ -562,8 +578,8 @@ g2a <- ggplot(data_bybugdrug %>% filter(pathogen %in% c("Klebsiella pneumoniae",
   scale_x_continuous("Age") + 
   scale_y_continuous("Proportion of isolates tested\n that are resistant") + 
   scale_color_manual("Drug family", breaks = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", 
-                                               "ansamycin", "macrolides"), labels = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", 
-                                                                                      "ansamycin", "macrolides"),
+                                               "rifamycin", "macrolides"), labels = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", 
+                                                                                      "rifamycin", "macrolides"),
                      values = familydrugpal, drop = FALSE) + 
   scale_fill_discrete("Sex", breaks = c("f","m"), labels = c("female","male"), type = c("#E41A1C", "#377EB8")) + 
   scale_size("# samples", breaks = seq(2500,20000,2500)) + 
@@ -576,8 +592,8 @@ g3a <- ggplot(data_bybugdrug %>% filter(pathogen %in% c("Enterococcus faecalis",
   scale_x_continuous("Age") + 
   scale_y_continuous("Proportion of isolates tested\n that are resistant") + 
   scale_color_manual("Drug family", breaks = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", 
-                                               "ansamycin", "macrolides"), labels = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", 
-                                                                                      "ansamycin", "macrolides"),
+                                               "rifamycin", "macrolides"), labels = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", 
+                                                                                      "rifamycin", "macrolides"),
                      values = familydrugpal, drop = FALSE) + 
   scale_fill_discrete("Sex", breaks = c("f","m"), labels = c("female","male"),type = c("#E41A1C", "#377EB8")) + 
   scale_size("# samples", breaks = seq(2500,20000,2500)) + 
@@ -589,8 +605,8 @@ g4a <- ggplot(data_bybugdrug %>% filter(pathogen %in% c("Staphylococcus aureus",
   geom_smooth(aes(fill = sex), col = "black") + 
   scale_x_continuous("Age") + 
   scale_y_continuous("Proportion of isolates tested\n that are resistant") + 
-  scale_color_manual("Drug family", breaks = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", "ansamycin", "macrolides"), 
-                     labels = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", "ansamycin", "macrolides"),
+  scale_color_manual("Drug family", breaks = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", "rifamycin", "macrolides"), 
+                     labels = c("aminoglycoside", "beta-lactam", "fluoroquinolone", "glycopeptide", "rifamycin", "macrolides"),
                      values = familydrugpal, drop = FALSE) + 
   scale_fill_discrete("Sex", breaks = c("f","m"), labels = c("female","male"), type = c("#E41A1C", "#377EB8")) + 
   scale_size("# samples", breaks = seq(2500,20000,2500)) + 
@@ -607,71 +623,95 @@ ggsave("plots/European_level_byage_bug_drug_1yr_drugfamily_withoutUKITFRDE.png")
 data_long %>% filter(family == "beta-lactam") %>% summarise(unique(aware))
 data_long <- data_long %>% 
   mutate(family_aware = ifelse(family == "beta-lactam", paste0(paste(family, aware,sep="\n("),")"), family))
-familydrugawarepal <- c('#c51b7d','#e6f598',
-                        '#FF0000','#fc8d59',"#FFCC00",'#FFF000',
-                        '#000CCC','#99d594','#3288bd',"#654CFF")
+# familydrugawarepal <- c('#c51b7d','#e6f598',
+#                         '#FF0000','#fc8d59',"#FFCC00",'#FFF000',
+#                         '#000CCC','#99d594','#3288bd',"#654CFF")
+familydrugawarepal <- c('#4575b4','#ffffbf','#d73027','#f46d43','#fdae61','#fee090','#74add1','#000CCC',"#654CFF")
 
 ### colour by aware within beta-lactam
 data_bybugdrug <- data_long %>% 
-  group_by(pathogen, drug, family, family_aware, age, sex,) %>% 
+  group_by(pathogen, drug, family, family_aware, age, gender) %>% 
   summarise(sus_t = sum(sus), res_t = sum(res)) %>% 
-  group_by(pathogen, drug, family, family_aware, age, sex) %>% mutate(proportion = res_t / (sus_t + res_t), total = sum(sus_t+res_t)) %>%
+  group_by(pathogen, drug, family, family_aware, age, gender) %>% mutate(proportion = res_t / (sus_t + res_t), total = sum(sus_t+res_t)) %>%
   filter(total > 10)
 data_bybugdrug$family <- factor(data_bybugdrug$family)
 data_bybugdrug$family_aware <- factor(data_bybugdrug$family_aware)
 
-g1a <- ggplot(data_bybugdrug %>% filter(pathogen %in% c("Pseudomonas aeruginosa","Acinetobacter spp")), aes(x=age, y = proportion, group = sex)) + 
+g1a <- 
+  ggplot(data_bybugdrug %>% filter(pathogen %in% c("Pseudomonas aeruginosa","Acinetobacter spp")), 
+         aes(x=age, y = proportion, group = gender)) + 
   geom_point(aes(size = total, alpha = 0.5, colour = family_aware)) + 
-  geom_smooth(aes(fill = sex), col = "black") + 
+  geom_smooth(aes(fill = family_aware, linetype = gender), col = "black") + 
   scale_x_continuous("Age") + 
   scale_y_continuous("Proportion of isolates tested\n that are resistant") + 
   scale_color_manual("Drug family\n(AWaRE\ngrouping)",values = familydrugawarepal, drop = FALSE) + 
-  scale_fill_discrete("Sex", breaks = c("f","m"), labels = c("female","male"), type = c("#E41A1C", "#377EB8")) +  
-  scale_size("# samples", breaks = seq(2500,20000,2500), limits = c(0,10000)) + 
+  scale_linetype_manual(name="Sex", values = c(1, 2), labels = c("Female","Male"),
+                        guide = guide_legend(override.aes = list(size = 10))) +
+  scale_fill_manual("Drug family\n(AWaRE\ngrouping)",values = familydrugawarepal, drop = FALSE) + 
+  scale_size("# samples", breaks = seq(2500,20000,2500), limits = c(0,12000), guide = guide_legend(override.aes = list(alpha = 0.3) )) + 
   theme(axis.text.x = element_text(angle = 90),strip.text.y = element_text(face = "italic")) + 
-  guides(colour = guide_legend(override.aes = list(size=10)), alpha = "none") + 
-  facet_grid(pathogen ~ family + drug)
+  guides(colour = guide_legend(override.aes = list(size=10)), alpha = "none", fill = "none") + 
+  facet_grid(pathogen ~ drug)+ 
+  theme(strip.background = element_rect(fill= "white", size=1.5))
 
-g2a <- ggplot(data_bybugdrug %>% filter(pathogen %in% c("Klebsiella pneumoniae","Escherichia coli")), aes(x=age, y = proportion, group = sex)) + 
+g2a <- ggplot(data_bybugdrug %>% filter(pathogen %in% c("Klebsiella pneumoniae","Escherichia coli")), aes(x=age, y = proportion, group = gender)) + 
   geom_point(aes(size = total, alpha = 0.5, colour = family_aware)) + 
-  geom_smooth(aes(fill = sex), col = "black") + 
+  geom_smooth(aes(fill = family_aware, linetype = gender), col = "black") + 
   scale_x_continuous("Age") + 
   scale_y_continuous("Proportion of isolates tested\n that are resistant") + 
   scale_color_manual("Drug family\n(AWaRE\ngrouping)",values = familydrugawarepal, drop = FALSE) + 
-  scale_fill_discrete("Sex", breaks = c("f","m"), labels = c("female","male"), type = c("#E41A1C", "#377EB8")) +  
-  scale_size("# samples", breaks = seq(2500,20000,2500), limits = c(0,10000)) + 
+  scale_linetype_manual(name="Sex", values = c(1, 2), labels = c("Female","Male"),
+                        guide = guide_legend(override.aes = list(size = 10))) +
+  scale_fill_manual("Drug family\n(AWaRE\ngrouping)",values = familydrugawarepal, drop = FALSE) + 
+  scale_size("# samples", breaks = seq(2500,20000,2500), limits = c(0,12000), guide = guide_legend(override.aes = list(alpha = 0.3) )) + 
   theme(axis.text.x = element_text(angle = 90),strip.text.y = element_text(face = "italic")) + 
-  guides(colour = guide_legend(override.aes = list(size=10)), alpha = "none") +  
-  facet_grid(pathogen ~ family + drug)
+  guides(colour = guide_legend(override.aes = list(size=10)), alpha = "none", fill = "none") + 
+  facet_grid(pathogen ~ drug)+ 
+  theme(strip.background = element_rect(fill= "white", size=1.5))
 
-g3a <- ggplot(data_bybugdrug %>% filter(pathogen %in% c("Enterococcus faecalis","Enterococcus faecium")), aes(x=age, y = proportion, group = sex)) + 
+g3a <- ggplot(data_bybugdrug %>% filter(pathogen %in% c("Enterococcus faecalis","Enterococcus faecium")), aes(x=age, y = proportion, group = gender)) + 
   geom_point(aes(size = total, alpha = 0.5, colour = family_aware)) + 
-  geom_smooth(aes(fill = sex), col = "black") + 
+  geom_smooth(aes(fill = family_aware, linetype = gender), col = "black") + 
   scale_x_continuous("Age") + 
   scale_y_continuous("Proportion of isolates tested\n that are resistant") + 
   scale_color_manual("Drug family\n(AWaRE\ngrouping)",values = familydrugawarepal, drop = FALSE) + 
-  scale_fill_discrete("Sex", breaks = c("f","m"), labels = c("female","male"), type = c("#E41A1C", "#377EB8")) + 
-  scale_size("# samples", breaks = seq(2500,20000,2500), limits = c(0,10000)) + 
+  scale_linetype_manual(name="Sex", values = c(1, 2), labels = c("Female","Male"),
+                        guide = guide_legend(override.aes = list(size = 10))) +
+  scale_fill_manual("Drug family\n(AWaRE\ngrouping)",values = familydrugawarepal, drop = FALSE) + 
+  scale_size("# samples", breaks = seq(2500,20000,2500), limits = c(0,12000), guide = guide_legend(override.aes = list(alpha = 0.3) )) + 
   theme(axis.text.x = element_text(angle = 90),strip.text.y = element_text(face = "italic")) + 
-  guides(colour = guide_legend(override.aes = list(size=10)), alpha = "none") + 
-  facet_grid(pathogen ~ family + drug)
+  guides(colour = guide_legend(override.aes = list(size=10)), alpha = "none", fill = "none") + 
+  facet_grid(pathogen ~  drug)+ 
+  theme(strip.background = element_rect(fill= "white", size=1.5))
 
-g4a <- ggplot(data_bybugdrug %>% filter(pathogen %in% c("Staphylococcus aureus", "Streptococcus pneumoniae")), aes(x=age, y = proportion, group = sex)) + 
+g4a <- ggplot(data_bybugdrug %>% filter(pathogen %in% c("Staphylococcus aureus", "Streptococcus pneumoniae")), aes(x=age, y = proportion, group = gender)) + 
   geom_point(aes(size = total, alpha = 0.5, colour = family_aware)) + 
-  geom_smooth(aes(fill = sex), col = "black") + 
+  geom_smooth(aes(fill = family_aware, linetype = gender), col = "black") + 
   scale_x_continuous("Age") + 
   scale_y_continuous("Proportion of isolates tested\n that are resistant") + 
   scale_color_manual("Drug family\n(AWaRE\ngrouping)",values = familydrugawarepal, drop = FALSE) + 
-  scale_fill_discrete("Sex", breaks = c("f","m"), labels = c("female","male"), type = c("#E41A1C", "#377EB8")) + 
-  scale_size("# samples", breaks = seq(2500,20000,2500), limits = c(0,10000)) + 
+  scale_linetype_manual(name="Sex", values = c(1, 2), labels = c("Female","Male"),
+                        guide = guide_legend(override.aes = list(size = 10))) +
+  scale_fill_manual("Drug family\n(AWaRE\ngrouping)",values = familydrugawarepal, drop = FALSE) + 
+  scale_size("# samples", breaks = seq(2500,20000,2500), limits = c(0,12000), guide = guide_legend(override.aes = list(alpha = 0.3) )) + 
   theme(axis.text.x = element_text(angle = 90),strip.text.y = element_text(face = "italic")) + 
-  guides(colour = guide_legend(override.aes = list(size=10)), alpha = "none") + 
-  facet_grid(pathogen ~ family + drug)  #+ 
-#guides(size = FALSE)
+  guides(colour = guide_legend(override.aes = list(size=10)), alpha = "none", fill = "none") + 
+  facet_grid(pathogen ~  drug) + 
+  theme(strip.background = element_rect(fill= "white", size=1.5))
 
-(g1a + g2a + g3a + g4a + plot_layout(guides = "collect", width = c(1,1.2))) + 
-  plot_annotation("European level (2015-2019)")
-ggsave("plots/European_level_byage_bug_drug_1yr_drugfamily_aware_FIGURE.png", width = 22, height = 10)
+((g1a + g2a + g3a + g4a + plot_layout(guides = "collect", width = c(1,1.2))) +
+  plot_layout(guides = "collect", width = c(1,1.2))) + 
+  plot_annotation("European level (2015-2019)", tag_levels = "A") 
+
+# p1a <- (g1a + g2a  + plot_layout(guides = "collect", width = c(1,1.2))) + 
+#   plot_annotation("European level (2015-2019)", subtitle = "Gram negative")
+# 
+# p2a <- (g3a + g4a + plot_layout(guides = "collect", width = c(1,1.2))) + 
+#   plot_annotation(subtitle = "Gram positive")
+# 
+# ((p1a) / (p2a)) + plot_layout(guides = "collect")
+
+ggsave("plots/Fig1.tiff",dpi = 300, width = 22, height = 10)
 
 
 
