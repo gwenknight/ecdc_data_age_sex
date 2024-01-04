@@ -212,18 +212,19 @@ if(sensitivity_0 == "OFF"){
 
 # (c) pivoted into long format and multi resistances removed 
 data_long_final <- data %>% pivot_longer(cols = fq_ent_R:strpne_multi_R) 
-
 data_long_final$combo <- paste0(data_long_final$pathogen, data_long_final$name)
 data_long_final$comboyr <- paste0(data_long_final$pathogen, data_long_final$name, data_long_final$DateUsedForStatisticsYear)
 
-colnames(data_long_final) <- c("year", "age","gender","pathogen", "name", "laboratorycode","country", "NA", "sus", "res", "proportion","combo","comboyr")
-# (d) multi resistances removed 
-bug_drug <- unique(data_long_final[,c("pathogen","name")])
+# Multi resistances are: 
 multi_rs <- c("esccol_multi_R","strpne_multi_R","klepne_multi_R","pseaer_multi_R","acispp_multi_R")
-bug_drug <- bug_drug %>% filter(!name %in% multi_rs) # remove multi resistance 
-# (e) just 2015-2019
+
+data_long_final <- data_long_final %>% filter(!combo %in% multi_rs)
+
+# (d) just 2015-2019
 data_long_final1 <- data_long_final %>% filter(year > 2014, year < 2020) ## 9438351 => 4266489
-data_long_final2 <- data_long_final1 %>% filter(combo %in% bug_drug$combo) ## 4266489 => 3549529
+
+### No more filtering in the below: so this is the final number of patients
+length(unique(data_long_final$patientcounter))
 
 # (e) with proportions and combos
 data_long_final2 <- data_long_final1 %>% select(DateUsedForStatisticsYear, age, gender, pathogen, reportingcountry, name, value,laboratorycode, patientcounter) %>% 
