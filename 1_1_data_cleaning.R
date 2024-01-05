@@ -210,28 +210,35 @@ if(sensitivity_0 == "OFF"){
   data <- data %>% filter(!is.na(age)) %>% filter(gender %in% c("f","m"))
 }
 
-# (c) pivoted into long format with proportions and combos
-data_long_final <- data %>% pivot_longer(cols = fq_ent_R:strpne_multi_R) %>% select(DateUsedForStatisticsYear, age, gender, pathogen, reportingcountry, name, value,laboratorycode) %>% 
-  group_by(DateUsedForStatisticsYear, age, gender, pathogen, name, value, laboratorycode, reportingcountry) %>% summarise(n = n()) %>%
-  pivot_wider(names_from = value, values_from = n)
-
-data_long_final$`1`[is.na(data_long_final$`1`)] <- 0
-data_long_final$`0`[is.na(data_long_final$`0`)] <- 0
-
-data_long_final <- data_long_final %>% mutate(proportion = `1`/(`1` + `0`)) %>% 
-  filter(!is.na(proportion))
-
+# (c) pivoted into long format and multi resistances removed 
+data_long_final <- data %>% pivot_longer(cols = fq_ent_R:strpne_multi_R) 
 data_long_final$combo <- paste0(data_long_final$pathogen, data_long_final$name)
 data_long_final$comboyr <- paste0(data_long_final$pathogen, data_long_final$name, data_long_final$DateUsedForStatisticsYear)
 
-colnames(data_long_final) <- c("year", "age","gender","pathogen", "name", "laboratorycode","country", "NA", "sus", "res", "proportion","combo","comboyr")
-# (d) multi resistances removed 
-bug_drug <- unique(data_long_final[,c("pathogen","name")])
+# Multi resistances are: 
 multi_rs <- c("esccol_multi_R","strpne_multi_R","klepne_multi_R","pseaer_multi_R","acispp_multi_R")
-bug_drug <- bug_drug %>% filter(!name %in% multi_rs) # remove multi resistance 
-# (e) just 2015-2019
+
+data_long_final <- data_long_final %>% filter(!combo %in% multi_rs)
+
+# (d) just 2015-2019
 data_long_final1 <- data_long_final %>% filter(year > 2014, year < 2020) ## 9438351 => 4266489
-data_long_final2 <- data_long_final1 %>% filter(combo %in% bug_drug$combo) ## 4266489 => 3549529
+
+### No more filtering in the below: so this is the final number of patients
+length(unique(data_long_final$patientcounter))
+
+# (e) with proportions and combos
+data_long_final2 <- data_long_final1 %>% select(DateUsedForStatisticsYear, age, gender, pathogen, reportingcountry, name, value,laboratorycode, patientcounter) %>% 
+  group_by(DateUsedForStatisticsYear, age, gender, pathogen, name, value, laboratorycode, reportingcountry) %>% 
+  summarise(n = n()) %>%
+  pivot_wider(names_from = value, values_from = n)
+
+data_long_final2$`1`[is.na(data_long_final$`1`)] <- 0
+data_long_final2$`0`[is.na(data_long_final$`0`)] <- 0
+
+data_long_final <- data_long_final2 %>% mutate(proportion = `1`/(`1` + `0`)) %>% 
+  filter(!is.na(proportion))
+
+colnames(data_long_final) <- c("year", "age","gender","pathogen", "name", "laboratorycode","country", "NA", "sus", "res", "proportion","combo","comboyr")
 
 # (f) add in bug drug names 
 data_long_finalnames <- data_long_final2 %>% 
