@@ -7,7 +7,7 @@ colours_to_use <- c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#A65
 # combinations
 path_drug_combos <- data.frame(read.csv2("path_drug_combos.csv", sep = ",", header = F))
 country_reference <- as.data.table(read.csv("countries_reference.csv"))
-colnames(country_reference) <- c("country", "country_long")
+colnames(country_reference) <- c("country", "country_long", "anon_country")
 
 ##### the overall ones ####
 
@@ -268,9 +268,9 @@ dev.off()
 ##### plotting tests #####
 
 temp <- comparisons_1_100[bug_drug == "staaur_mrsa_R",]
-new_order <- unique(temp[order(gender, median)]$country_long)
+new_order <- unique(temp[order(gender, median)]$anon_country)
 
-comparisons_1_100$country_long <- factor(comparisons_1_100$country_long , 
+comparisons_1_100$anon_country <- factor(comparisons_1_100$anon_country , 
                                          levels = new_order)
 
 translate_bug_drugs <-as.data.table(read.csv("data/translate_drug_bugs.csv", header = F))
@@ -280,7 +280,7 @@ comparisons_1_100[translate_bug_drugs, on ="resistance", resistance_long := i.dr
 comparisons_1_100[,bug_drug_long := paste0(bug_long, "\n", resistance_long)]
 
 
-SPECIFIC <- ggplot(comparisons_1_100[gender == "female"], aes(x = country_long, y = median, colour = gender)) + 
+SPECIFIC <- ggplot(comparisons_1_100, aes(x = anon_country, y = median, colour = gender)) + 
   facet_wrap(bug_drug_long~., ncol = 12) + 
   geom_pointrange(aes(ymin= lower, ymax = upper),
                   position = position_dodge(width = 0.3), 
@@ -290,7 +290,7 @@ SPECIFIC <- ggplot(comparisons_1_100[gender == "female"], aes(x = country_long, 
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size = 4), 
         legend.position = "none") + 
   geom_hline(yintercept = 0, linetype ="dashed") + 
-  scale_color_manual(values = colours_to_use) +
+  scale_color_manual(values = colours_to_use, "sex", labels = c("female","male")) +
   lims(y=c(-0.5, 0.5)) + 
   labs(x = "Country", y = "Change in proportion for ages 1-100", 
        colour = "gender")
