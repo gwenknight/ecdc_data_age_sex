@@ -628,6 +628,10 @@ data_long <- data_long %>%
 #                         '#000CCC','#99d594','#3288bd',"#654CFF")
 familydrugawarepal <- c('#4575b4','#ffffbf','#d73027','#f46d43','#fdae61','#fee090','#74add1','#000CCC',"#654CFF")
 
+familydrugawarepal <- c('#c51b7d',
+                        '#FF0000','#fc8d59',"#FFCC00",'#FFF000',
+                        '#000CCC','#99d594','#3288bd','#e6f598')
+
 ### colour by aware within beta-lactam
 data_bybugdrug <- data_long %>% 
   group_by(pathogen, drug, family, family_aware, age, gender) %>% 
@@ -640,8 +644,8 @@ data_bybugdrug$family_aware <- factor(data_bybugdrug$family_aware)
 g1a <- 
   ggplot(data_bybugdrug %>% filter(pathogen %in% c("Pseudomonas aeruginosa","Acinetobacter spp")), 
          aes(x=age, y = proportion, group = gender)) + 
-  geom_point(aes(size = total, shape = gender),alpha = 0.2, colour = "black") + #geom_point(aes(size = total, alpha = 0.5, colour = family_aware)) + 
-  geom_smooth(aes(fill = family_aware, linetype = gender), col = "black") + 
+  geom_point(aes(size = total, shape = gender),alpha = 0.5, colour = "grey") + #geom_point(aes(size = total, alpha = 0.5, colour = family_aware)) + 
+  geom_smooth(aes(fill = family_aware, linetype = gender), col = "black", alpha = 0.8) + 
   scale_x_continuous("Age") + 
   scale_y_continuous("Proportion of isolates tested\n that are resistant") + 
   scale_color_manual("Drug family\n(AWaRE\ngrouping)",values = familydrugawarepal, drop = FALSE) + 
@@ -649,14 +653,16 @@ g1a <-
                         guide = guide_legend(override.aes = list(size = 10))) +
   scale_fill_manual("Drug family\n(AWaRE\ngrouping)",values = familydrugawarepal, drop = FALSE) + 
   scale_size("# samples", breaks = seq(2500,20000,2500), limits = c(0,12000), guide = guide_legend(override.aes = list(alpha = 0.3) )) + 
+  scale_shape("Sex", labels = c("Female", "Male"), guide = guide_legend(override.aes = list(alpha = 0.2))) + 
   theme(axis.text.x = element_text(angle = 90),strip.text.y = element_text(face = "italic")) + 
-  guides(colour = guide_legend(override.aes = list(size=10)), alpha = "none", fill = "none") + 
-  facet_grid(pathogen ~ drug)+ 
-  theme(strip.background = element_rect(fill= "white", size=1.5))
+  guides(fill = guide_legend(override.aes = list(size=10)), alpha = "none", colour = "none") + 
+  facet_grid(pathogen ~ drug)+  
+  theme(strip.background = element_rect(fill= "white", size=1.5)) + 
+  guides(fill = guide_legend(order = 1))
 
 g2a <- ggplot(data_bybugdrug %>% filter(pathogen %in% c("Klebsiella pneumoniae","Escherichia coli")), aes(x=age, y = proportion, group = gender)) + 
-  geom_point(aes(size = total, shape = gender),alpha = 0.05, colour = "black") + #geom_point(aes(size = total, alpha = 0.5, colour = family_aware)) + 
-  geom_smooth(aes(fill = family_aware, linetype = gender), col = "black") + 
+  geom_point(aes(size = total, shape = gender),alpha = 0.5, colour = "grey") + #geom_point(aes(size = total, alpha = 0.05, shape = gender, colour = family_aware)) + #
+  geom_smooth(aes(fill = family_aware, linetype = gender), col = "black", alpha = 0.8) + 
   scale_x_continuous("Age") + 
   scale_y_continuous("Proportion of isolates tested\n that are resistant") + 
   scale_color_manual("Drug family\n(AWaRE\ngrouping)",values = familydrugawarepal, drop = FALSE) + 
@@ -664,14 +670,16 @@ g2a <- ggplot(data_bybugdrug %>% filter(pathogen %in% c("Klebsiella pneumoniae",
                         guide = guide_legend(override.aes = list(size = 10))) +
   scale_fill_manual("Drug family\n(AWaRE\ngrouping)",values = familydrugawarepal, drop = FALSE) + 
   scale_size("# samples", breaks = seq(2500,20000,2500), limits = c(0,12000), guide = guide_legend(override.aes = list(alpha = 0.3) )) + 
+  scale_shape("Sex", labels = c("Female", "Male"), guide = guide_legend(override.aes = list(alpha = 0.2))) + 
   theme(axis.text.x = element_text(angle = 90),strip.text.y = element_text(face = "italic")) + 
-  guides(colour = guide_legend(override.aes = list(size=10)), alpha = "none", fill = "none") + 
+  guides(fill = guide_legend(override.aes = list(size=10)), alpha = "none", colour = "none") + 
   facet_grid(pathogen ~ drug)+ 
-  theme(strip.background = element_rect(fill= "white", size=1.5))
+  theme(strip.background = element_rect(fill= "white", size=1.5)) + 
+  guides(fill = guide_legend(order = 1))
 
 g3a <- ggplot(data_bybugdrug %>% filter(pathogen %in% c("Enterococcus faecalis","Enterococcus faecium")), aes(x=age, y = proportion, group = gender)) + 
-  geom_point(aes(size = total, shape = gender),alpha = 0.2, colour = "black") + #geom_point(aes(size = total, alpha = 0.5, colour = family_aware)) + 
-  geom_smooth(aes(fill = family_aware, linetype = gender), col = "black") + 
+  geom_point(aes(size = total, shape = gender),alpha = 0.5, colour = "grey") + #geom_point(aes(size = total, alpha = 0.5, colour = family_aware)) + 
+  geom_smooth(aes(fill = family_aware, linetype = gender), col = "black", alpha = 0.8) + 
   scale_x_continuous("Age") + 
   scale_y_continuous("Proportion of isolates tested\n that are resistant") + 
   scale_color_manual("Drug family\n(AWaRE\ngrouping)",values = familydrugawarepal, drop = FALSE) + 
@@ -679,38 +687,34 @@ g3a <- ggplot(data_bybugdrug %>% filter(pathogen %in% c("Enterococcus faecalis",
                         guide = guide_legend(override.aes = list(size = 10))) +
   scale_fill_manual("Drug family\n(AWaRE\ngrouping)",values = familydrugawarepal, drop = FALSE) + 
   scale_size("# samples", breaks = seq(2500,20000,2500), limits = c(0,12000), guide = guide_legend(override.aes = list(alpha = 0.3) )) + 
+  scale_shape("Sex", labels = c("Female", "Male"), guide = guide_legend(override.aes = list(alpha = 0.2))) + 
   theme(axis.text.x = element_text(angle = 90),strip.text.y = element_text(face = "italic")) + 
-  guides(colour = guide_legend(override.aes = list(size=10)), alpha = "none", fill = "none") + 
+  guides(fill = guide_legend(override.aes = list(size=10)), alpha = "none", colour = "none") + 
   facet_grid(pathogen ~  drug)+ 
-  theme(strip.background = element_rect(fill= "white", size=1.5))
+  theme(strip.background = element_rect(fill= "white", size=1.5)) + 
+  guides(fill = guide_legend(order = 1))
 
 g4a <- ggplot(data_bybugdrug %>% filter(pathogen %in% c("Staphylococcus aureus", "Streptococcus pneumoniae")), aes(x=age, y = proportion, group = gender)) + 
-  geom_point(aes(size = total, shape = gender),alpha = 0.2, colour = "black") + #geom_point(aes(size = total, alpha = 0.5, colour = family_aware)) + 
-  geom_smooth(aes(fill = family_aware, linetype = gender), col = "black") + 
+  geom_point(aes(size = total, shape = gender),alpha = 0.5, colour = "grey") + #geom_point(aes(size = total, alpha = 0.5, colour = family_aware)) + 
+  geom_smooth(aes(fill = family_aware, linetype = gender), col = "black", alpha = 0.8) + 
   scale_x_continuous("Age") + 
   scale_y_continuous("Proportion of isolates tested\n that are resistant") + 
   scale_color_manual("Drug family\n(AWaRE\ngrouping)",values = familydrugawarepal, drop = FALSE) + 
   scale_linetype_manual(name="Sex", values = c(1, 2), labels = c("Female","Male"),
                         guide = guide_legend(override.aes = list(size = 10))) +
-  scale_fill_manual("Drug family\n(AWaRE\ngrouping)",values = familydrugawarepal, drop = FALSE) + 
-  scale_size("# samples", breaks = seq(2500,20000,2500), limits = c(0,12000), guide = guide_legend(override.aes = list(alpha = 0.3) )) + 
   theme(axis.text.x = element_text(angle = 90),strip.text.y = element_text(face = "italic")) + 
-  guides(colour = guide_legend(override.aes = list(size=10)), alpha = "none", fill = "none") + 
+  guides(fill = guide_legend(override.aes = list(size=10)), alpha = "none", colour = "none") + 
   facet_grid(pathogen ~  drug) + 
-  theme(strip.background = element_rect(fill= "white", size=1.5))
+  theme(strip.background = element_rect(fill= "white", size=1.5)) + 
+  scale_fill_manual("Drug family\n(AWaRE\ngrouping)",values = familydrugawarepal, drop = FALSE) + 
+  scale_size("# samples", breaks = seq(2500,20000,2500), limits = c(0,12000), 
+             guide = guide_legend(override.aes = list(alpha = 0.3) )) + 
+  scale_shape("Sex", labels = c("Female", "Male"), guide = guide_legend(override.aes = list(alpha = 0.2))) + 
+  guides(fill = guide_legend(order = 1))
 
 ((g1a + g2a + g3a + g4a + plot_layout(guides = "collect", width = c(1,1.2))) +
   plot_layout(guides = "collect", width = c(1,1.2))) + 
   plot_annotation("European level (2015-2019)", tag_levels = "A") 
-
-# p1a <- (g1a + g2a  + plot_layout(guides = "collect", width = c(1,1.2))) + 
-#   plot_annotation("European level (2015-2019)", subtitle = "Gram negative")
-# 
-# p2a <- (g3a + g4a + plot_layout(guides = "collect", width = c(1,1.2))) + 
-#   plot_annotation(subtitle = "Gram positive")
-# 
-# ((p1a) / (p2a)) + plot_layout(guides = "collect")
-
 ggsave("plots/Fig1.tiff",dpi = 300, width = 22, height = 10)
 
 ggplot(data_bybugdrug %>% filter(pathogen %in% c("Pseudomonas aeruginosa","Acinetobacter spp")), 
