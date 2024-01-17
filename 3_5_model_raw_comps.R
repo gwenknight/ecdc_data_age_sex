@@ -10,6 +10,9 @@ familydrugpal <- c('#c51b7d','#fc8d59','#fee08b','#e6f598','#99d594','#3288bd')
 #                         '#FF0000','#fc8d59',"#FFCC00",'#FFF000',
 #                         '#000CCC','#99d594','#3288bd',"#654CFF")
 familydrugawarepal <- c('#4575b4','#ffffbf','#d73027','#f46d43','#fdae61','#fee090','#74add1','#000CCC',"#654CFF")
+familydrugawarepal <- c('#c51b7d',
+                        '#FF0000','#fc8d59',"#FFCC00",'#FFF000',
+                        '#000CCC','#99d594','#3288bd','#e6f598')
 
 translate_bug_drugs <-as.data.table(read.csv("data/translate_drug_bugs.csv", header = F))
 translate_bugs <- unique(translate_bug_drugs[,c("V2", "V1")])
@@ -168,7 +171,7 @@ DRUG_COMPARE_BUG <- ggplot(combo2,
 #legend = gtable_filter(ggplot_gtable(ggplot_build(DRUG_COMPARE_BUG)), "guide-box")
 
 
-tiff(paste0("output_figures/summaries_combined/Fig5.tiff"), 
+tiff(paste0("output_figures/summaries_combined/Fig5_original.tiff"), 
      width = 3250, height = 3000, res = 300)
 print( grid.arrange(
   BUG_COMPARE_DRUG, # + theme(legend.position = "none"),
@@ -179,6 +182,53 @@ print( grid.arrange(
 ) )
 
 dev.off()
+
+#### Split by gram stain status
+combo2 <- as.data.frame(combo2)
+combo2$bug_long <- factor(combo2$bug_long, levels = 
+                            c( "Acinetobacter species","Escherichia coli","Klebsiella pneumoniae","Pseudomonas aeruginosa",
+                               "Enterococcus faecalis","Enterococcus faecium",  "Staphylococcus aureus", "Streptococcus pneumoniae"))
+
+combo2$final_grouping <- factor(combo2$final_grouping)
+
+gp <- ggplot(combo2 %>% filter(Gram_stain == "Positive"),aes(x = bug_long, y = median, colour = final_grouping, group = drug_long)) + 
+  geom_pointrange(aes(ymin= lower, ymax = upper),
+                  position = position_dodge(width = 0.6)) + 
+  facet_grid(.~gender)+
+  labs(y = "Change in proportion between age 1 and 100",
+       x = "Antibiotic",
+       title = "A", 
+       colour = "Drug Family") + 
+  geom_hline(yintercept = 0, linetype ="dashed") + 
+  theme_linedraw() +
+  coord_flip() + 
+  theme(legend.spacing.y = unit(0.2, 'cm')) +
+  theme(axis.text.y=element_text(face="italic"))+
+  guides(colour = guide_legend(byrow = TRUE)) + 
+  scale_colour_manual(values = familydrugawarepal, breaks = c("aminoglycoside", "beta-lactam\n(Access + Watch)", "beta-lactam\n(Access)", 
+                                                              "beta-lactam\n(Watch + Reserve)", "beta-lactam\n(Watch)", 
+                                                              "fluoroquinolone", "glycopeptide", "macrolides","rifamycin"), drop = FALSE)
+
+gn <- ggplot(combo2 %>% filter(Gram_stain == "Negative"),aes(x = bug_long, y = median, colour = final_grouping, group = drug_long)) + 
+  geom_pointrange(aes(ymin= lower, ymax = upper),
+                  position = position_dodge(width = 0.6)) + 
+  facet_grid(.~gender)+
+  labs(y = "Change in proportion between age 1 and 100",
+       x = "Antibiotic",
+       title = "B", 
+       colour = "Drug Family") + 
+  geom_hline(yintercept = 0, linetype ="dashed") + 
+  theme_linedraw() + 
+  coord_flip() + 
+  theme(legend.spacing.y = unit(0.2, 'cm')) +
+  theme(axis.text.y=element_text(face="italic"))+
+  guides(colour = guide_legend(byrow = TRUE)) + 
+  scale_colour_manual(values = familydrugawarepal, breaks = c("aminoglycoside", "beta-lactam\n(Access + Watch)", "beta-lactam\n(Access)", 
+                                                              "beta-lactam\n(Watch + Reserve)", "beta-lactam\n(Watch)", 
+                                                              "fluoroquinolone", "glycopeptide", "macrolides","rifamycin"), drop = FALSE) 
+
+gp / gn + plot_layout(guides = "collect")
+ggsave("output_figures/Fig5.tiff",dpi = 300, width = 10, height = 10)
 
 ###### BY DRUG #####
 
