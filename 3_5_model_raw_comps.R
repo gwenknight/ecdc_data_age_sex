@@ -186,8 +186,8 @@ dev.off()
 #### Split by gram stain status
 combo2 <- as.data.frame(combo2)
 combo2$bug_long <- factor(combo2$bug_long, levels = 
-                            c( "Acinetobacter species","Escherichia coli","Klebsiella pneumoniae","Pseudomonas aeruginosa",
-                               "Enterococcus faecalis","Enterococcus faecium",  "Staphylococcus aureus", "Streptococcus pneumoniae"))
+                            c("Pseudomonas aeruginosa","Klebsiella pneumoniae","Escherichia coli","Acinetobacter species",
+                              "Streptococcus pneumoniae", "Staphylococcus aureus","Enterococcus faecium", "Enterococcus faecalis"))
 
 combo2$final_grouping <- factor(combo2$final_grouping)
 
@@ -196,8 +196,8 @@ gp <- ggplot(combo2 %>% filter(Gram_stain == "Positive"),aes(x = bug_long, y = m
                   position = position_dodge(width = 0.6)) + 
   facet_grid(.~gender)+
   labs(y = "Change in proportion between age 1 and 100",
-       x = "Antibiotic",
-       title = "A", 
+       x = "Bacteria",
+       title = "Gram positive", 
        colour = "Drug Family") + 
   geom_hline(yintercept = 0, linetype ="dashed") + 
   theme_linedraw() +
@@ -214,8 +214,8 @@ gn <- ggplot(combo2 %>% filter(Gram_stain == "Negative"),aes(x = bug_long, y = m
                   position = position_dodge(width = 0.6)) + 
   facet_grid(.~gender)+
   labs(y = "Change in proportion between age 1 and 100",
-       x = "Antibiotic",
-       title = "B", 
+       x = "Bacteria",
+       title = "Gram negative", 
        colour = "Drug Family") + 
   geom_hline(yintercept = 0, linetype ="dashed") + 
   theme_linedraw() + 
@@ -227,7 +227,7 @@ gn <- ggplot(combo2 %>% filter(Gram_stain == "Negative"),aes(x = bug_long, y = m
                                                               "beta-lactam\n(Watch + Reserve)", "beta-lactam\n(Watch)", 
                                                               "fluoroquinolone", "glycopeptide", "macrolides","rifamycin"), drop = FALSE) 
 
-gp / gn + plot_layout(guides = "collect")
+gn / gp + plot_layout(guides = "collect") 
 ggsave("output_figures/Fig5.tiff",dpi = 300, width = 10, height = 10)
 
 ###### BY DRUG #####
