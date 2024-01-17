@@ -16,18 +16,86 @@ data <- read_csv("data/data_cleaned.csv")
 
 ######*********** Summary stats ******* #######
 # Number of susceptibility tests
-data %>% ungroup() %>% summarise(total = sus + res) %>% summarise(sum(total))
+tot <- data %>% ungroup() %>% summarise(total = sus + res) %>% summarise(sum(total))
+data %>% ungroup() %>% group_by(gender) %>% summarise(total = sus + res) %>% summarise(sum(total))
+data %>% ungroup() %>% group_by(gender) %>% summarise(total = sus + res) %>% summarise(sum(total)) %>% select(`sum(total)`)/ as.numeric(tot)
 
-# By drug / bug
-data %>% ungroup() %>% group_by(pathogen, name) %>% summarise(total = sus + res) %>%
-  group_by(pathogen, name) %>% summarise(totals = sum(total))
 
 # Demographics
-range(data$age)
+data %>% dplyr::ungroup() %>% dplyr::summarise(mean(age), range(age), median(age), sd(age))
 data %>% group_by(gender) %>% summarise(mean(age), range(age), median(age), sd(age))
 
 d <- data %>% group_by(gender) %>% summarise(total = sus+res) %>% summarise(sum(total))
 d[1,2] / (d[1,2] + d[2,2])*100 # 47% are from females
+
+# By country
+data %>% ungroup() %>% group_by(country) %>% summarise(total = sus + res) %>%
+  group_by(country) %>% summarise(totals = sum(total)) %>% summarise(range(totals), mean(totals), sd(totals))
+
+data %>% ungroup() %>% group_by(country, gender) %>% summarise(total = sus + res) %>%
+  group_by(country, gender) %>% summarise(totals = sum(total)) %>% group_by(gender) %>% summarise(range(totals), mean(totals), sd(totals))
+
+# By bacteria
+bb <- data %>% ungroup() %>% group_by(pathogen) %>% summarise(total = sus + res) %>%
+  group_by(pathogen) %>% summarise(totals = sum(total)) %>% summarise(r = range(totals), m = mean(totals), s = sd(totals))
+
+paste0(prettyNum(bb[1,"r"],big.mark = ","), " - ", prettyNum(bb[2,"r"],big.mark = ","), " (", 
+       prettyNum(round(bb[1,"m"],0),big.mark = ","),"; ", prettyNum(bb[1,"s"],big.mark = ","),")")
+
+bb <- data %>% ungroup() %>% group_by(pathogen, gender) %>% summarise(total = sus + res) %>%
+  group_by(pathogen, gender) %>% summarise(totals = sum(total)) %>% group_by(gender) %>% summarise(r = range(totals), m = mean(totals), s = sd(totals))
+
+paste0(prettyNum(bb[1,"r"],big.mark = ","), " - ", prettyNum(bb[2,"r"],big.mark = ","), " (", 
+       prettyNum(round(bb[1,"m"],0),big.mark = ","),", ", prettyNum(bb[1,"s"],big.mark = ","),")")
+
+paste0(prettyNum(bb[3,"r"],big.mark = ","), " - ", prettyNum(bb[4,"r"],big.mark = ","), " (", 
+       prettyNum(round(bb[3,"m"],0),big.mark = ","),", ", prettyNum(bb[3,"s"],big.mark = ","),")")
+
+# By antibiotic
+data_a <- data %>% mutate(drug = recode(name, "amika_R" = "amikacin","aminogl_R" = "aminoglycoside","carbapen_R" = "carbapenem",
+                                        "fq_pseudo_R" = "fluoroquinolone", "fq_staaur_R" = "fluoroquinolone", "fq_strpne_R" = "fluoroquinolone","fq_ent_R" = "fluoroquinolone",
+                                        "aminopen_R" = "aminopenicillins","genta_high" = "high_level_aminoglycoside","vanco_R" = "vancomycin",
+                                        "cefIII_entero_R" = "Third_generation_cephalosporins", "cefIII_strpne_R" = "Third_generation_cephalosporins",
+                                        "ert_R" = "ertapenem","ureidopen_R" = "piperacillin_tazobactam", "ceftaz_R" = "ceftazidime",
+                                        "mrsa_R" = "methicillin","rifamp_R"="rifampicin","macrol_R" = "macrolides","penic_RI" = "penicillins")) %>% 
+  mutate(pathogen = recode(pathogen, "encfae" = "Enterococcus faecalis", "encfai" = "Enterococcus faecium", 
+                           "esccol" = "Escherichia coli", "klepne" = "Klebsiella pneumoniae", 
+                           "staaur" = "Staphylococcus aureus", "strpne" = "Streptococcus pneumoniae", 
+                           "acispp" = "Acinetobacter spp", "pseaer"="Pseudomonas aeruginosa"))
+
+bb <- data_a %>% ungroup() %>% group_by(drug) %>% summarise(total = sus + res) %>%
+  group_by(drug) %>% summarise(totals = sum(total)) %>% summarise(r = range(totals), m = mean(totals), s = sd(totals))
+
+paste0(prettyNum(bb[1,"r"],big.mark = ","), " - ", prettyNum(bb[2,"r"],big.mark = ","), " (", 
+       prettyNum(round(bb[1,"m"],0),big.mark = ","),", ", prettyNum(bb[1,"s"],big.mark = ","),")")
+
+bb <- data_a %>% ungroup() %>% group_by(drug, gender) %>% summarise(total = sus + res) %>%
+  group_by(drug, gender) %>% summarise(totals = sum(total)) %>% group_by(gender) %>% summarise(r = range(totals), m = mean(totals), s = sd(totals))
+
+paste0(prettyNum(bb[1,"r"],big.mark = ","), " - ", prettyNum(bb[2,"r"],big.mark = ","), " (", 
+       prettyNum(round(bb[1,"m"],0),big.mark = ","),", ", prettyNum(bb[1,"s"],big.mark = ","),")")
+
+paste0(prettyNum(bb[3,"r"],big.mark = ","), " - ", prettyNum(bb[4,"r"],big.mark = ","), " (", 
+       prettyNum(round(bb[3,"m"],0),big.mark = ","),", ", prettyNum(bb[3,"s"],big.mark = ","),")")
+
+# By drug / bug
+bb <- data_a %>% ungroup() %>% group_by(drug, pathogen) %>% rowwise() %>% summarise(total = sus + res) %>%
+  group_by(drug, pathogen) %>% summarise(totals = sum(total)) 
+
+bb %>% arrange(pathogen)
+
+# By drug / bug / sex 
+bb <- data_a %>% ungroup() %>% group_by(drug, pathogen, gender) %>% rowwise() %>% summarise(total = sus + res) %>%
+  group_by(drug, pathogen, gender) %>% summarise(totals = sum(total)) 
+
+bb2 <- bb %>% arrange(pathogen) %>% pivot_wider(names_from = gender, values_from = totals)
+
+# By drug / bug / age
+bb <- data_a %>% ungroup() %>% group_by(drug, pathogen) %>% dplyr::summarise(mean(age), median(age), sd(age))
+
+bb3 <- left_join(bb2, bb) %>% mutate(mean_age = round(`mean(age)`,0))
+write.csv(bb3, "output/data_table_summary_1.csv")
+
 
 
 ########*********  Usual plots  ******* #######
