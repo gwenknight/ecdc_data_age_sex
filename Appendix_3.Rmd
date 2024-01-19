@@ -1,6 +1,6 @@
 ---
-title: "Appendix 3"
-author: "Naomi Waterlow, Gwen Knight"
+title: "S3 Appendix"
+author: "Naomi Waterlow, Ben Cooper, Julie Robotham, Gwen Knight"
 date: "`r Sys.Date()`"
 output: pdf_document
 ---
@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-## Paper: Why demographic factors matter for antimicrobial resistance – quantification of the patterns and impact of variation in prevalence of resistance by age and gender 
+## Paper: Antimicrobial resistance prevalence in bloodstream infection in 29 European countries by age and sex: an observational study
 
 ## Bacteria-antibiotic specific results
 
@@ -174,6 +174,11 @@ grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_strpne_ma
 
 ```{r strpne, penic_RI, echo=FALSE, fig.cap = "*Streptococcus pneumoniae*,  Penicillins. A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and gender. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories." , fig.height=3}
 grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_strpne_penic_RI_combo.tiff") )
+
+```
+
+```{r strpne, FQ, echo=FALSE, fig.cap = "*Streptococcus pneumoniae*,  Fluoroquinolones. A) Model parameters. B) Change in proportion resistant between ages 1 and 100 for each country and sex. C) Data (points) and model predictions (lines) with 95% CIs (ribbons) for the most extreme and the middle county from B. Each country has two lines, depicting the predictions for the most extreme laboratories in the country. Data is grouped across years and laboratories." , fig.height=3}
+grid::grid.raster( tiff::readTIFF("output_figures/by_bug_drug/combined_strpne_fq_strpne_R_combo.tiff") )
 
 ```
 
