@@ -210,6 +210,10 @@ if(sensitivity_0 == "OFF"){
   data <- data %>% filter(!is.na(age)) %>% filter(gender %in% c("f","m"))
 }
 
+# Want trends? Only need if looking at future incidence 
+# Baseline = no
+trends = "NO"
+
 # (c) pivoted into long format and multi resistances removed 
 # Multi resistances are: 
 multi_rs <- c("esccol_multi_R","strpne_multi_R","klepne_multi_R","pseaer_multi_R","acispp_multi_R")
@@ -218,12 +222,18 @@ data_long_final0 <- data %>%
   select(DateUsedForStatisticsYear, age, gender, year, pathogen, reportingcountry, name, value,laboratorycode, patientcounter)
 
 # (d) just 2015-2019
-data_long_final1 <- data_long_final0 %>% 
-  filter(year > 2014, year < 2020) ## NEW: 75958584 => 34048728   
+if(trends == "NO"){ #USUAL = BASELINE
+  data_long_final1 <- data_long_final0 %>% 
+    filter(year > 2014, year < 2020) ## NEW: 75958584 => 34048728   
+} else if(trends == "YES"){ # For incidence trends 
+  data_long_final1 <- data_long_final0 %>% 
+    filter( year > 2008, year < 2020) ## NEW: 75958584 => 34048728   
+}
 rm(data_long_final0)
 
+
 ### No more filtering in the below: so this is the final number of patients
-data_long_final1 %>% summarise(length(unique(patientcounter))) # 944520
+data_long_final1 %>% summarise(length(unique(patientcounter))) # 1049690
 
 data_long_final1 %>% group_by(gender) %>% summarise(length(unique(patientcounter))) # f = 444778, m = 538723
 
@@ -258,10 +268,18 @@ data_long_finalnames <- data_long_final %>%
                        "mrsa_R" = "methicillin","rifamp_R"="rifampicin","macrol_R" = "macrolides","penic_RI" = "penicillins")) # check out table S3 in appendix
 
 # SAVE
-if(sensitivity_0 == "ON"){
-  write.csv(data_long_finalnames, "data/data_cleaned_with0s.csv")
-} else if(sensitivity_0 == "OFF"){
-  write.csv(data_long_finalnames, "data/data_cleaned.csv")
+if(trends == "NO"){
+  if(sensitivity_0 == "ON"){
+    write.csv(data_long_finalnames, "data/data_cleaned_with0s.csv")
+  } else if(sensitivity_0 == "OFF"){
+    write.csv(data_long_finalnames, "data/data_cleaned.csv")
+  } 
+} else if(trends == "YES"){
+  if(sensitivity_0 == "ON"){
+    write.csv(data_long_finalnames, "data/data_cleaned_with0s_fortrends.csv")
+  } else if(sensitivity_0 == "OFF"){
+    write.csv(data_long_finalnames, "data/data_cleaned_fortrends.csv")
+  }
 }
 
 #####********* Basic analysis of final data ******* #######
